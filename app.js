@@ -22,10 +22,10 @@ var env = process.env;
 var nextUserId = 0;
 
 
-function addUser (source, sourceUser) {
+var addUser  = function(source, sourceUser) {
 	console.log(sourceUser);
 	var curUser = {};
-	collection = db.get('usercollection');
+	var collection = db.get('usercollection');
 	if (collection){
 		collection.find({
 			fbuid: sourceUser.id
@@ -66,35 +66,9 @@ function addUser (source, sourceUser) {
 		});
 		nextUserId++;
 	}
-  // if (arguments.length === 1) { // password-based
-  // 	user = sourceUser = source;
-  // 	user.id = ++nextUserId;
-  // 	return usersById[nextUserId] = user;
-  // } else { // non-password-based
-  // 	user = usersById[++nextUserId] = {id: nextUserId};
-  // 	user[source] = sourceUser;
-  // }
-  return curUser;
-}
+	return curUser;
+};
 
-//Facebook login
-everyauth.facebook 					//default entry: /auth/facebook
-.appId(env.FACEBOOK_APP_ID)
-.appSecret(env.FACEBOOK_SECRET)
-.handleAuthCallbackError( function (req, res) {
-    // If a user denies your app, Facebook will redirect the user to
-    // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
-    // This configurable route handler defines how you want to respond to
-    // that.
-    // If you do not configure this, everyauth renders a default fallback
-    // view notifying the user that their authentication failed and why.
-})
-.findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
-	// return usersByFbId[fbUserMetadata.id] ||
-	// (usersByFbId[fbUserMetadata.id] = 
-		return addUser('facebook', fbUserMetadata);
-	})
-.redirectPath('/');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -110,6 +84,63 @@ app.use(express.session());
 app.use(everyauth.middleware());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
+
+//Facebook login
+everyauth.facebook 					//default entry: /auth/facebook
+.appId(env.FACEBOOK_APP_ID)
+.appSecret(env.FACEBOOK_SECRET)
+.handleAuthCallbackError( function (req, res) {
+    // If a user denies your app, Facebook will redirect the user to
+    // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
+    // This configurable route handler defines how you want to respond to
+    // that.
+    // If you do not configure this, everyauth renders a default fallback
+    // view notifying the user that their authentication failed and why.
+})
+.findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
+	return addUser('facebook', fbUserMetadata);
+})
+.redirectPath('/');
+
+app.post('/api/savefeed', function(req,res){
+	feed = req.body;
+	console.log(result);
+	var collection = db.get('feedcollection');
+	var result;
+	collection.find({
+		id: feed.id
+	}, function(err,doc) {
+		if (err) {
+			console.log(err);
+		}
+		else {
+			if(doc.length == 0){
+				collection.insert({
+					id: feed.id,
+					url: feed.url
+				}, function(err,doc) {
+					if (err){
+						console.log(err);
+					}
+					else {
+						console.log("got");
+						console.log(doc);
+						result = doc;
+					}
+				});	
+			}
+			else {
+				console.log('found');
+				console.log(doc);
+				result = doc[0];
+
+			}
+		}
+		res.json(result, 201);
+	});
+});
+
+
 
 // development only
 if ('development' == app.get('env')) {
