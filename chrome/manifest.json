@@ -1,0 +1,21 @@
+{
+    "name": "readfeedlater",
+    "version": "0.6",
+    "description": "Let you bookmark your favorite or interesting Facebook posts",
+  
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    
+    "content_scripts": [{
+        "js": [ "jquery-1.11.0.min.js", "content.js"],
+        "matches": [ "http://*.facebook.com/*", "https://*.facebook.com/*"]
+    }],
+
+    "permissions": [
+        "tabs", "http://*.facebook.com/*", "https://*.facebook.com/*"
+    ],
+
+    "manifest_version": 2
+}
