@@ -134,6 +134,39 @@ app.get('/feeds', loggedin, function(req,res){
 	})
 });
 
+var isOwner = function(req,res,next){
+	var collection = db.get('feedcollection');
+	collection.find({
+		id:req.body.id
+	}).success(function(doc) {
+		if(doc.length != 0){
+			if (req.session.userid === doc.userid){
+				next();
+			}
+			else {
+				res.header("Access-Control-Allow-Origin", "*");
+				res.end('');
+				res.redirect('/auth/facebook', 403);
+			}
+		}
+		else{
+			res.send('no such feed');
+		}
+	})
+};
+
+app.del('/api/feeds/:id', loggedin, isOwner, function(req,res) {
+	var collection = db.get('feedcollection');
+	collection.remove({
+		id:req.body.id
+	}).success(function(doc){
+		res.send('success');
+	}).error(function(err){
+		console.log(error);
+		res.send('error');
+	})
+});
+
 app.get('/user');
 
 
