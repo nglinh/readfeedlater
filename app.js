@@ -34,40 +34,37 @@ everyauth.facebook 					//default entry: /auth/facebook
 })
 .findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
 	session.accessToken = accessToken;
-		session.fbuid = fbUserMetadata.id;					//stick to session
-		var result = addUser('facebook', fbUserMetadata);
-		session.userid = result.id;
-		return result;
-	})
-.redirectPath('/');
-
-var addUser  = function(source, sourceUser) {
-	console.log(sourceUser);
+	session.fbuid = fbUserMetadata.id;
 	var curUser = {};
 	var collection = db.get('usercollection');
-	collection.find({
-		fbuid: sourceUser.id
-	},function(err,res){
-		if (!err){
-			if (res.length == 0){
-				collection.insert({
-					id: nextUserId,
-					fbuid: sourceUser.id,
-					name: sourceUser.name
-				}, function(e, res){
-					curUser = res[0];
-					nextUserId++;
-				});
-			}
-			else {
-				console.log('found');
-				curUser = res[0];
-				console.log(res);
-			}
+	return collection.find({
+		fbuid: fbUserMetadata.id
+	}).success( function(doc) {
+		if (doc.length == 0){
+			collection.insert({
+				id: nextUserId,
+				fbuid: fbUserMetadata.id,
+				name: fbUserMetadata.name
+			}).success(function(doc) {
+				curUser = doc;
+				session.userid = curUser.id;
+				console.log(session.userid);
+				console.log(session.fbuid);
+				session.save();
+				nextUserId++;
+			});
+		}
+		else {
+			console.log('found');
+			curUser = doc[0];
+			session.userid = curUser.id;
+			session.save();
+			console.log(session.userid);
+			console.log(session.fbuid);
 		}
 	});
-	return curUser;
-};
+})
+.redirectPath('/');
 
 
 // all environments
@@ -85,12 +82,15 @@ app.use(everyauth.middleware());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+
 var loggedin = function(req,res,next){
-	if (req.session.accessToken && req.session.userid){
+	if (typeof req.session.accessToken != 'undefined' && typeof req.session.userid != 'undefined'){
 		next();
 	}
 	else{
-		console.log(req.body);
+		console.log(req.session.accessToken);
+		console.log(req.session);
 		res.header("Access-Control-Allow-Origin", "*");
 		res.end('');
 		res.redirect('/auth/facebook', 403);
@@ -102,42 +102,39 @@ app.post('/api/savefeed', loggedin, function(req,res){
 	console.log(result);
 	var collection = db.get('feedcollection');
 	var result;
-	collection.find({
-		id: feed.id
+	collection.insert({
+		id: feed.id,
+		url: feed.url,
+		userid: req.session.userid,
+		fbuid: req.session.fbuid
 	}, function(err,doc) {
-		if (err) {
+		if (err){
 			console.log(err);
 		}
 		else {
-			if(doc.length == 0){
-				collection.insert({
-					id: feed.id,
-					url: feed.url
-				}, function(err,doc) {
-					if (err){
-						console.log(err);
-					}
-					else {
-						console.log("got");
-						console.log(doc);
-						result = doc;
-						res.header("Access-Control-Allow-Origin", "*");
-						res.json(result, 201);
-						res.end('');
-					}
-				});	
-			}
-			else {
-				console.log('found');
-				console.log(doc);
-				result = doc[0];
-				res.header("Access-Control-Allow-Origin", "*");
-				res.json(result, 201);
-				res.end('');
-			}
+			console.log("got");
+			console.log(doc);
+			result = doc;
+			res.header("Access-Control-Allow-Origin", "*");
+			res.end('');
+			res.json(result, 201);
 		}
-	});
+	});	
 });
+
+app.get('/feeds', loggedin, function(req,res){
+	var collection = db.get('feedcollection');
+	console.log(req.session);
+	collection.find({
+		userid:req.session.userid
+	}, function(err, doc) {
+		if(!err){
+			res.json(doc,200);
+		}
+	})
+});
+
+app.get('/user');
 
 
 
@@ -147,7 +144,6 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){
 	console.log('Express server listening on port ' + app.get('port'));
