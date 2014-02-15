@@ -1,4 +1,4 @@
-<!--<!doctype html>
+<!doctype html>
 <html>
   <head>
     <title>Getting Started Extension's Popup</title>
@@ -23,43 +23,11 @@
       -
       - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
      -->
-<!--    <script src="popup.js"></script>
+     <div id="fb-root"></div>
+    <script src="popup.js"></script>
+    <script src="https://connect.facebook.net/en_US/all.js" />
   </head>
   <body>
   </body>
-</html> -->
-
-<html>
-<head>
-    <title>Options for Color Chooser</title>
-    <!--<script type="text/javascript" src="options.js"></script>-->
-</head>
-<body>
-    <div id="fb-root"></div>
-    <script>
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId      : '{your-app-id}',
-                status     : true,
-                xfbml      : true
-            });
-
-            FB.Event.subscribe('auth.authResponseChange', function(response) {
-            if (response.status === 'connected') {
-            console.log('Logged in');
-            } else {
-                FB.login();
-            }
-        };
-
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_US/all.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-    </script>
-</body>
 </html>
+
