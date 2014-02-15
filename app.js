@@ -90,8 +90,8 @@ var loggedin = function(req,res,next){
 		next();
 	}
 	else{
-		req.session.redirect_to = "/api/savefeed"
-		req.session.data = req.body;
+		res.header("Access-Control-Allow-Origin", "*");
+		res.end('');
 		res.redirect('/auth/facebook', 403);
 	}
 };
@@ -120,7 +120,9 @@ app.post('/api/savefeed', loggedin, function(req,res){
 						console.log("got");
 						console.log(doc);
 						result = doc;
+						res.header("Access-Control-Allow-Origin", "*");
 						res.json(result, 201);
+						res.end('');
 					}
 				});	
 			}
@@ -128,7 +130,9 @@ app.post('/api/savefeed', loggedin, function(req,res){
 				console.log('found');
 				console.log(doc);
 				result = doc[0];
+				res.header("Access-Control-Allow-Origin", "*");
 				res.json(result, 201);
+				res.end('');
 			}
 		}
 	});
