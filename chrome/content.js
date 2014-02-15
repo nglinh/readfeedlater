@@ -29,10 +29,12 @@ var addBookmarkLinkToPost = function() {
 
             $.ajax({
                 type: 'POST',
-                url : 'readfeedlater.herokuapp.com',
+                url : 'http://readfeedlater.herokuapp.com',
                 data : JSON.stringify(data),
-                dataType: 'json'
-            });
+                dataType: 'jsonp',
+            })
+            .done(function() {console.log('success');})
+            .fail(function() {console.log('failure');});
         });
 
         $(spanElement).append(hyperlinkElement);
