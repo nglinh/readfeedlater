@@ -35,7 +35,9 @@ everyauth.facebook 					//default entry: /auth/facebook
 .findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
 	session.accessToken = accessToken;
 		session.fbuid = fbUserMetadata.id;					//stick to session
-		return addUser('facebook', fbUserMetadata);
+		var result = addUser('facebook', fbUserMetadata);
+		session.userid = result.id;
+		return result;
 	})
 .redirectPath('/');
 
@@ -84,7 +86,7 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 var loggedin = function(req,res,next){
-	if (req.session.accessToken){
+	if (req.session.accessToken && req.session.userid){
 		next();
 	}
 	else{
