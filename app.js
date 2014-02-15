@@ -88,7 +88,7 @@ var loggedin = function(req,res,next){
 		next();
 	}
 	else{
-		res.send("please log in");
+		res.send("please log in", 403);
 	}
 };
 
