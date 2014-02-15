@@ -10,11 +10,12 @@
     
     "content_scripts": [{
         "js": [ "jquery-1.11.0.min.js", "content.js"],
-        "matches": [ "http://*.facebook.com/*", "https://*.facebook.com/*"]
+        "matches": ["https://*.facebook.com/*"]
     }],
 
     "permissions": [
-        "tabs", "http://*.facebook.com/*", "https://*.facebook.com/*"
+        "tabs", "https://*.facebook.com/*",
+        "https://readfeedlater.herokuapp.com"
     ],
 
     "manifest_version": 2

@@ -17,21 +17,25 @@ var addBookmarkLinkToPost = function() {
             // Get the post URL
             var siblingElement = shareElement.siblings().has('a>abbr');
 
-            if (siblingElement.length != 0) {
-                var firstChild = siblingElement.children().first();
-                var url = $(firstChild[0]).attr('href');
-                if (url.indexOf('www.facebook.com') < 0)
-                    url = 'www.facebook.com' + url;
-                console.log(url);
-            }
+            if (siblingElement.length == 0)
+                return;
+
+            var firstChild = siblingElement.children().first();
+            url = $(firstChild[0]).attr('href');
+            if (url.indexOf('www.facebook.com') < 0)
+                url = 'www.facebook.com' + url;
 
             var data = {'id': 1, 'url': url};
+            //console.log(JSON.stringify(data));
 
             $.ajax({
                 type: 'POST',
-                url : 'http://readfeedlater.herokuapp.com',
-                data : JSON.stringify(data),
-                dataType: 'jsonp',
+                url : 'http://readfeedlater.herokuapp.com/api/savefeed',
+                data : data,
+                dataType: 'application/x-www-form-urlencoded',
+                statusCode: {
+                    403: function() {console.log ("403 error")}
+                }
             })
             .done(function() {console.log('success');})
             .fail(function() {console.log('failure');});
