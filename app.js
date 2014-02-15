@@ -90,10 +90,9 @@ var loggedin = function(req,res,next){
 		next();
 	}
 	else{
-		res.send("please log in", 403);
 		req.session.redirect_to = "/api/savefeed"
 		req.session.data = req.body;
-		redirect('/auth/facebook');
+		res.redirect('/auth/facebook', 403);
 	}
 };
 
