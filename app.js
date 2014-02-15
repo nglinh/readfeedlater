@@ -37,12 +37,6 @@ everyauth.facebook 					//default entry: /auth/facebook
 		session.fbuid = fbUserMetadata.id;					//stick to session
 		var result = addUser('facebook', fbUserMetadata);
 		session.userid = result.id;
-		if (session.redirect_to == '/api/savefeed'){
-			addFeed(session.redirect_data, session.redirect_req, session.redirect_res);
-			delete session.redirect_data;
-			delete session.redirect_req;
-			delete session.redirect_res;
-		}
 		return result;
 	})
 .redirectPath('/');
@@ -75,8 +69,39 @@ var addUser  = function(source, sourceUser) {
 	return curUser;
 };
 
-var addFeed = function(feed,req,res){
+
+// all environments
+app.set('port', process.env.PORT || 3000);
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+app.use(express.favicon());
+app.use(express.logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(express.methodOverride());
+app.use(express.cookieParser('your secret here'));
+app.use(express.session());
+app.use(everyauth.middleware());
+app.use(app.router);
+app.use(express.static(path.join(__dirname, 'public')));
+
+var loggedin = function(req,res,next){
+	if (req.session.accessToken && req.session.userid){
+		next();
+	}
+	else{
+		res.send("please log in", 403);
+		req.session.redirect_to = "/api/savefeed"
+		req.session.data = req.body;
+		redirect('/auth/facebook');
+	}
+};
+
+app.post('/api/savefeed', loggedin, function(req,res){
+	feed = req.body;
+	console.log(result);
 	var collection = db.get('feedcollection');
+	var result;
 	collection.find({
 		id: feed.id
 	}, function(err,doc) {
@@ -108,42 +133,6 @@ var addFeed = function(feed,req,res){
 			}
 		}
 	});
-}
-
-var loggedin = function(req,res,next){
-	if (req.session.accessToken && req.session.userid){
-		next();
-	}
-	else{
-		req.session.redirect_to = "/api/savefeed"
-		req.session.redirect_data = req.body;
-		req.session.redirect_res = res;
-		req.session.redirect_req = req;
-		redirect('/auth/facebook');
-	}
-};
-
-
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-app.use(express.cookieParser('your secret here'));
-app.use(express.session());
-app.use(everyauth.middleware());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-
-app.post('/api/savefeed', loggedin, function(req,res){
-	feed = req.body;
-	addFeed(feed,req,res);
 });
 
 
