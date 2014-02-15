@@ -126,6 +126,7 @@ app.post('/api/savefeed', function(req,res){
 						console.log("got");
 						console.log(doc);
 						result = doc;
+						res.json(result, 201);
 					}
 				});	
 			}
@@ -133,10 +134,9 @@ app.post('/api/savefeed', function(req,res){
 				console.log('found');
 				console.log(doc);
 				result = doc[0];
-
+				res.json(result, 201);
 			}
 		}
-		res.json(result, 201);
 	});
 });
 
