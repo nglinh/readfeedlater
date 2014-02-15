@@ -35,7 +35,9 @@ everyauth.facebook 					//default entry: /auth/facebook
 .findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
 	session.accessToken = accessToken;
 		session.fbuid = fbUserMetadata.id;					//stick to session
-		return addUser('facebook', fbUserMetadata);
+		var result = addUser('facebook', fbUserMetadata);
+		session.userid = result.id;
+		return result;
 	})
 .redirectPath('/');
 
@@ -54,8 +56,8 @@ var addUser  = function(source, sourceUser) {
 					name: sourceUser.name
 				}, function(e, res){
 					curUser = res[0];
+					nextUserId++;
 				});
-				nextUserId++;
 			}
 			else {
 				console.log('found');
@@ -84,11 +86,14 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 var loggedin = function(req,res,next){
-	if (req.session.accessToken){
+	if (req.session.accessToken && req.session.userid){
 		next();
 	}
 	else{
-		res.send("please log in");
+		console.log(req.body);
+		res.header("Access-Control-Allow-Origin", "*");
+		res.end('');
+		res.redirect('/auth/facebook', 403);
 	}
 };
 
@@ -116,7 +121,9 @@ app.post('/api/savefeed', loggedin, function(req,res){
 						console.log("got");
 						console.log(doc);
 						result = doc;
+						res.header("Access-Control-Allow-Origin", "*");
 						res.json(result, 201);
+						res.end('');
 					}
 				});	
 			}
@@ -124,7 +131,9 @@ app.post('/api/savefeed', loggedin, function(req,res){
 				console.log('found');
 				console.log(doc);
 				result = doc[0];
+				res.header("Access-Control-Allow-Origin", "*");
 				res.json(result, 201);
+				res.end('');
 			}
 		}
 	});
