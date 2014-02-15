@@ -13,7 +13,7 @@
 //mongo setup
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('localhost:27017/readfeedlater');
+var db = monk(process.env.MONGOHQ_URL);
 
 var app = express();
 
