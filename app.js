@@ -90,6 +90,7 @@ var loggedin = function(req,res,next){
 		next();
 	}
 	else{
+		console.log(req.body);
 		res.header("Access-Control-Allow-Origin", "*");
 		res.end('');
 		res.redirect('/auth/facebook', 403);
