@@ -8,8 +8,28 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
+var everyauth = require('everyauth');
 
 var app = express();
+
+var env = process.env;
+
+//Facebook login
+everyauth.facebook 					//default entry: /auth/facebook
+  .appId(env.FACEBOOK_APP_ID)
+  .appSecret(env.FACEBOOK_SECRET)
+  .handleAuthCallbackError( function (req, res) {
+    // If a user denies your app, Facebook will redirect the user to
+    // /auth/facebook/callback?error_reason=user_denied&error=access_denied&error_description=The+user+denied+your+request.
+    // This configurable route handler defines how you want to respond to
+    // that.
+    // If you do not configure this, everyauth renders a default fallback
+    // view notifying the user that their authentication failed and why.
+  })
+  .findOrCreateUser( function (session, accessToken, accessTokExtra, fbUserMetadata) {
+    // find or create user logic goes here
+  })
+  .redirectPath('/');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -22,12 +42,13 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
 app.use(express.session());
+app.use(everyauth.middleware());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
-  app.use(express.errorHandler());
+  app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
 }
 
 app.get('/', routes.index);
