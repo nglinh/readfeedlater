@@ -15,7 +15,7 @@
 
     "permissions": [
         "tabs", "https://*.facebook.com/*",
-        "https://readfeedlater.herokuapp.com",
+        "https://readfeedlater.herokuapp.com"
     ],
 
     "content_security_policy": "script-src 'unsafe-eval' https://connect.facebook.net; object-src 'self'",
