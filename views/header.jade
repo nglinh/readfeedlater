@@ -1,15 +1,54 @@
-div.navbar.navbar-inverse.navbar-fixed-top
-    div.navbar-inner
-        div.container
-            a.btn.btn-navbar(data-toggle="collapse", data-target=".nav-collapse")
+nav(class="navbar navbar-default" role="navigation")
+    div.container-fluid
+        <!-- Brand and toggle get grouped for better mobile display -->
+        div.navbar-header
+            button(type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1")
+                span.sr-only Toggle navigation
                 span.icon-bar
                 span.icon-bar
                 span.icon-bar
-            div.nav-collapse.collapse
-                ul.nav
-                    li.active
-                        a(href="#") Home
-                    li
-                        a(href="#about") About
-                    li
-                        a(href="#contact") Contact
+            a(class="navbar-brand" href="#") Brand
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        div(class="collapse navbar-collapse" id="bs-example-navbar-collapse-1")
+            ul(class="nav navbar-nav")
+                li.active
+                    a(href="#") Link
+                li
+                    a(href="#") Link
+                li.dropdown
+                    a(href="#" class="dropdown-toggle" data-toggle="dropdown") Dropdown 
+                        b.caret
+                    ul.dropdown-menu
+                        li
+                            a(href="#") Action
+                        li
+                            a(href="#") Another action
+                        li
+                            a(href="#") Something else here
+                        li.divider
+                        li
+                            a(href="#") Separated link
+                        li.divider
+                        li
+                            a(href="#") One more separated link
+            form(class="navbar-form navbar-left" role="search")
+                div.form-group
+                    input(type="text" class="form-control" placeholder="Search")
+                button(type="submit" class="btn btn-default") Submit
+            ul.nav.navbar-nav.navbar-right
+                li
+                    a(href="#") Link
+                li.dropdown
+                    a(href="#" class="dropdown-toggle" data-toggle="dropdown") Dropdown 
+                        b.caret
+                    ul.dropdown-menu
+                        li
+                            a(href="#") Action
+                        li
+                            a(href="#") Another action
+                        li
+                            a(href="#") Something else here
+                        li.divider
+                        li
+                            a(href="#") Separated link
