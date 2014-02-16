@@ -92,6 +92,7 @@ var loggedin = function(req,res,next){
 		console.log(req.session.accessToken);
 		console.log(req.session);
 		res.header("Access-Control-Allow-Origin", "chrome-extension://dbbggbeilgfkehdmhiegjgifjphmaicn");
+		res.header("Access-Control-Allow-Credentials", "true");
 		res.end('');
 		res.redirect('/auth/facebook', 403);
 	}
@@ -116,6 +117,7 @@ app.post('/api/savefeed', loggedin, function(req,res){
 			console.log(doc);
 			result = doc;
 			res.header("Access-Control-Allow-Origin", "chrome-extension://dbbggbeilgfkehdmhiegjgifjphmaicn");
+			res.header("Access-Control-Allow-Credentials", "true");
 			res.end('');
 			res.json(result, 201);
 		}
@@ -145,6 +147,7 @@ var isOwner = function(req,res,next){
 			}
 			else {
 				res.header("Access-Control-Allow-Origin", "chrome-extension://dbbggbeilgfkehdmhiegjgifjphmaicn");
+				res.header("Access-Control-Allow-Credentials", "true");
 				res.end('');
 				res.redirect('/auth/facebook', 403);
 			}
