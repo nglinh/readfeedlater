@@ -1,6 +1,5 @@
 // Add bookmark link
 var BOOKMARK_TEXT = 'Bookmark';
-//$('a.share_action_link').after(' · <span><a>' + BOOKMARK_TEXT + '</a></span>');
 
 var addBookmarkLinkToPost = function() {
     $('a.share_action_link').after(function() {
@@ -26,7 +25,7 @@ var addBookmarkLinkToPost = function() {
                 url = 'www.facebook.com' + url;
 
             var data = {'id': 1, 'url': url};
-            //console.log(JSON.stringify(data));
+            console.log(JSON.stringify(data));
 
             $.ajax({
                 type: 'POST',
@@ -34,11 +33,11 @@ var addBookmarkLinkToPost = function() {
                 data : data,
                 dataType: 'application/x-www-form-urlencoded',
                 statusCode: {
-                    403: function() {console.log ("403 error")}
+                    403: function() {window.open('http://readfeedlater.herokuapp.com', '_blank');}
                 }
             })
-            .done(function() {console.log('success');})
-            .fail(function() {console.log('failure');});
+
+            hyperlinkElement.html('Bookmarked');
         });
 
         $(spanElement).append(hyperlinkElement);
