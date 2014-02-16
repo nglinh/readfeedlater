@@ -33,7 +33,7 @@ var addBookmarkLinkToPost = function() {
                 data : data,
                 dataType: 'application/x-www-form-urlencoded',
                 statusCode: {
-                    403: function() {console.log ("403 error")}
+                    403: function() {window.open('http://readfeedlater.herokuapp.com', '_blank');}
                 }
             })
 
